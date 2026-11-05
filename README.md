@@ -36,7 +36,8 @@ MODEL=YOUR_CHOICE_OF_MODEL
 ```
 doc-qa-rag/
 ├── README.md
-├── experiments.py      # small API experiments (prompting, structured output, injection)
+├── embeddings.py        # embedding generation and retrieval
+├── gemini_experiments.ipynb # small API experiments (prompting, structured output, injection)
 ├── data/               # source PDFs (not committed)
 ├── .env                # API key (not committed)
 └── ...                 # RAG pipeline files added later
@@ -44,7 +45,7 @@ doc-qa-rag/
 
 ## Experiments log
 
-Short and reproducible experiments to test the Gemini API and prompt engineering, as well understanding how the model behaves with different inputs. Each entry records an unique experiment that tackles a specific challenge.
+Short and reproducible experiments to test the Gemini API and prompt engineering, as well understanding how the model behaves with different inputs. Each entry records an unique experiment that tackles a specific challenge. These experiments were done within the `gemini_experiments.ipynb` notebook, and the results are summarized below.
 
 ### E-00: Testing First API Call to Gemini
 
@@ -109,9 +110,9 @@ Short and reproducible experiments to test the Gemini API and prompt engineering
 
 ### Embedding Experiments
 
-Testing semantic vector generation and nearest-neighbor search from scratch using `gemini-embedding-2` and NumPy.
+Testing semantic vector generation and nearest-neighbor search from scratch using `gemini-embedding-2` and NumPy, all done in the `embeddings.py` file.
 
-1. Cossine Similarity Matrix (8 Sentences across 3 Topics)**:
+1. Cossine Similarity Matrix (8 Sentences across 3 Topics):
     - Generated dense vectors for 8 sentences across Astronomy (`0–2`), Culinary (`3–5`), and Software (`6–7`).
     - The resulting $8 \times 8$ cosine similarity matrix confirmed high intra-topic clustering (e.g., Doc 1 [Jupiter] & Doc 2 [Jupiter] scored `0.74`) and clear cross-topic separation (e.g., Doc 0 [Jupiter] vs. Doc 4 [Pasta] dropped to `0.25`).
     - Unrelated sentences still maintained a baseline similarity of ~`0.30–0.50` due to shared syntax, sentence structure, and language representation constraints in positive embedding space.
@@ -131,5 +132,5 @@ Testing semantic vector generation and nearest-neighbor search from scratch usin
     - Query: *"Show me something that is NOT about astronomy or planets."*
    - Retrieval failed completely: the top 3 results were all astronomy sentences (Docs 1, 0, and 2, scores: `0.61–0.65`).
 
-From this experiment, the key takeaways are the fact that dense embeddings are effective to capture concepts and resolve vocabulary mismatches where traditional keyword search fails. However, since dot products and cosine distances compute directional alighnment rather than logical conditions, the query containing negative semantic operators will retrieve results that are semantically similar to the positive tokens in the query. This has implications to RAG as it cannor handle negative or boolean semantic keywords on its own.
+From this experiment, the key takeaways are the fact that dense embeddings are effective to capture concepts and resolve vocabulary mismatches where traditional keyword search fails. However, since dot products and cosine distances compute directional alighnment rather than logical conditions, the query containing negative semantic operators will retrieve results that are semantically similar to the positive tokens in the query. This has implications to RAG as it cannot handle negative or boolean semantic keywords on its own.
 

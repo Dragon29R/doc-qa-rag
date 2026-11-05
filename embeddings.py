@@ -42,10 +42,7 @@ documents = [
 
 print("Generating embeddings for the 8 documents...")
 embeddings = [get_embedding(doc) for doc in documents]
-print(embeddings)
-print("\n--- Embeddings Matrix (8xEmbedding_Dim) ---")
 embeddings_matrix = np.array(embeddings)  # shape: (8, embedding_dim)
-print(embeddings_matrix)
 
 
 # 2. Cosine Similarity Matrix between all document pairs
