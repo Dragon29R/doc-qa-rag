@@ -107,4 +107,29 @@ Short and reproducible experiments to test the Gemini API and prompt engineering
 - **What suprised me**: The naive call held up against a classic prompt injection without explicit defensive measures. Modern Gemini models appear to be trained to prioritize the top-level user task frame over conflicting pseudo-system directives appearing mid-text.
 - **Takeaway**: Even though the model was resilient to this simple prompt injection without any explicit defenses, it is still important to implement security measures like this one to protect against more sophisticated attacks, especially in production pipelines where the stakes are higher.
 
+### Embedding Experiments
+
+Testing semantic vector generation and nearest-neighbor search from scratch using `gemini-embedding-2` and NumPy.
+
+1. Cossine Similarity Matrix (8 Sentences across 3 Topics)**:
+    - Generated dense vectors for 8 sentences across Astronomy (`0–2`), Culinary (`3–5`), and Software (`6–7`).
+    - The resulting $8 \times 8$ cosine similarity matrix confirmed high intra-topic clustering (e.g., Doc 1 [Jupiter] & Doc 2 [Jupiter] scored `0.74`) and clear cross-topic separation (e.g., Doc 0 [Jupiter] vs. Doc 4 [Pasta] dropped to `0.25`).
+    - Unrelated sentences still maintained a baseline similarity of ~`0.30–0.50` due to shared syntax, sentence structure, and language representation constraints in positive embedding space.
+
+2. Semantic Retrieval (Ranking Test):
+    - Evaluated dense retrieval by querying: *"What instruments are used to observe the cosmos?"*
+    - Successfully ranked the most relevant documents at the top:
+     1. Doc 1 (*Astronomers discovered a new distant galaxy*, score: `0.6634`)
+     2. Doc 2 (*The James Webb telescope captured images of stars*, score: `0.6446`)
+     3. Doc 0 (*Jupiter is the largest planet in our solar system*, score: `0.5777`)
+
+3. Challenging case without keyword overlaps:
+    - Query: *"How to bake dough in the oven?"*
+    - Successfully retrieved Doc 3 (*"A traditional bread recipe requires flour, water, and salt"*, score: `0.6725`) at #1 despite zero lexical overlap (`dough`/`bake`/`oven` vs. `bread`/`recipe`/`flour`/`water`/`salt`), validating dense semantic retrieval over traditional keyword search.
+
+4. Challenging case with negative semantic similarity:
+    - Query: *"Show me something that is NOT about astronomy or planets."*
+   - Retrieval failed completely: the top 3 results were all astronomy sentences (Docs 1, 0, and 2, scores: `0.61–0.65`).
+
+From this experiment, the key takeaways are the fact that dense embeddings are effective to capture concepts and resolve vocabulary mismatches where traditional keyword search fails. However, since dot products and cosine distances compute directional alighnment rather than logical conditions, the query containing negative semantic operators will retrieve results that are semantically similar to the positive tokens in the query. This has implications to RAG as it cannor handle negative or boolean semantic keywords on its own.
 
