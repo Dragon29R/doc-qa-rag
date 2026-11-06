@@ -43,6 +43,24 @@ doc-qa-rag/
 └── ...                 # RAG pipeline files added later
 ```
 
+## Retrieval-Augmented Generation (RAG)
+
+This project implements a simple yet pratical Retrieval-Augmented Generation (RAG) pipeline, backed up with a local vector database (ChromaDB) and the Gemini API. The pipeline consists of six main steps:
+
+- **PDF Loading**: Load the PDF files from the `data/` folder and extract their text content. `TODO`
+- **Text Splitting/Chunking**: Split the extracted text into smaller chunks to facilitate embedding and retrieval. `TODO`
+- **Embedding Generation and Storage**: Generate embeddings for each chunk using the Gemini embedding model and store them in the vector database. `TODO`
+-**Retrieval**: Given a user query, retrieve the most relevant chunks from the vector database based on their embeddings. `TODO`
+-**Answer Generation**: Use the retrieved chunks as context to generate an answer to the user's query using the Gemini API. `TODO`
+-**Evaluation**: Evaluate the quality of the retrieved chunks and generated answers using a small evaluation set. `TODO`
+
+### Known issues (found so far)
+ 
+- **Front and back matter pollutes results.** Tables of contents, reference lists and indexes match keywords but contain no answers, and they rank above real content (E-08).
+- **Text is not cleaned yet.** Chunks still contain hyphenated line breaks ("nor-\nmally"), single newlines, and glued columns in lists such as the acronym page ("ACMAssociation for Computing Machinery").
+- **Retrieval always returns k results,** even for unanswerable questions. "I don't know" has to come from the generation prompt, and no distance threshold has been set.
+
+
 ## Experiments log
 
 Short and reproducible experiments to test the Gemini API and prompt engineering, as well understanding how the model behaves with different inputs. Each entry records an unique experiment that tackles a specific challenge. These experiments were done within the `gemini_experiments.ipynb` notebook, and the results are summarized below.
@@ -134,3 +152,16 @@ Testing semantic vector generation and nearest-neighbor search from scratch usin
 
 From this experiment, the key takeaways are the fact that dense embeddings are effective to capture concepts and resolve vocabulary mismatches where traditional keyword search fails. However, since dot products and cosine distances compute directional alighnment rather than logical conditions, the query containing negative semantic operators will retrieve results that are semantically similar to the positive tokens in the query. This has implications to RAG as it cannot handle negative or boolean semantic keywords on its own.
 
+## Retrieval-Augmented Generation (RAG) Experiments
+
+- **Question:** does retrieval find the right passages, and what happens with an unanswerable question?
+- **Setup:** `retrieve(question, k=4)` over the 489-chunk collection (cosine distance, lower is closer), with questions about three of the documents and one unrelated question.
+- **Result:**
+  | Question | Best distance | Top results |
+  |----------|---------------|-------------|
+  | Who is Ryze? | 0.311 | Bibliography (p.34) ranked first, the answer (p.9) second, the index (p.34) third |
+  | What is a chronic wound? | 0.26 | Correct definition on p.17 ranked first and second, reference list (p.87) third |
+  | What kind of political system does Portugal have? | 0.26 | All four from the Portugal paper, with the semi-presidential system page first |
+  | How do I bake a cake? (unrelated) | 0.419 | Table of contents, Python code, a figure caption |
+- **What surprised me:** Some of the retrieved chunks contained index or bibliography contents, which can be explained by the fact that they contain keywords or acronyms that will flag similarity. In the future, this is a easy fix that will definely improve the retrieved results.
+- **Takeaway:** retrieval finds the right document in all three answerable cases. Relevant questions had best distances of 0.26 to 0.33, and the unrelated question 0.419, so the gap is real but modest and I haven't set a threshold from four questions. Retrieval always returns k results, so refusing to answer has to be handled by the generation prompt. Front and back matter (contents, references, index) takes ranking slots from real content, so filtering those pages is the next improvement and the baseline above is the comparison.

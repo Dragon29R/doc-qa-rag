@@ -1,3 +1,7 @@
 .env
 .venv/
 llm_workflows_and_agents_guide.html
+rag_from_scratch_guide.html
+chunks.json
+chroma_db/
+data/
