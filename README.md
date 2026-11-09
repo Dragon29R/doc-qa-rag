@@ -143,11 +143,13 @@ The results show the following:
 
 6. **Page numbers need care.** The `page` stored in Chroma is the PDF page. In the body of this dissertation the printed page is the PDF page minus 16 (PDF page 39 is printed page 23), but the front matter uses roman numerals and a different offset. The evaluation set must therefore use PDF pages or chunk ids, not the printed numbers.
 
-#### Fixes tried
+#### Fixes tried in the first iteration
 
-- **Partial-answer prompt**: a new rule lets the model answer what the context supports and state which part it cannot answer; "I don't know" stays for questions where nothing relevant appears. With this prompt and $k=8$, Q3 gets a partial answer: it gives the total number of images in the dataset and says it cannot answer the highest F-beta, without inventing a number.
+- **Partial-answer prompt**: a new rule lets the model answer what the context supports and state which part it cannot answer; "I don't know" stays for questions where nothing relevant appears. 
 - **Larger $k$**: $k=8$ does not reach the dataset-size chunks (best rank 30), so it cannot fix the retrieval half.
 - **Query decomposition**: `decompose_query` and `retrieve_multi` are implemented in the notebook.
+
+These fixes were able to solve the Question 3 not returning sucessful results, and with that, all 15 questions have sucessfully passed the evaluation phase. 
 ---
 
 ## Experiments Log
