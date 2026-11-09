@@ -89,16 +89,65 @@ The pipeline was evaluated on a 15-question benchmark (`eval_and_results.md`) ac
 
 1. **False Abstention on Question #3 (`Automated_Dressing_Saturation_Analysis.pdf`)**
    - *Query*: *"How many images are in the dissertation's dataset, and which pipeline achieved the highest overall F-beta score on the fold 0 test set?"*
-   - *What happened*: The model returned `"I can't answer based on the given documents."` because the top $k=4$ retrieved chunks did not contain the actual numbers.
-   - *Root causes*:
-     - **Front & Back Matter Pollution**: The Table of Contents and List of Tables (pages 7–11 of the thesis PDF) contain dense concentrations of exact query keywords (`"dataset"`, `"fold 0 test set"`, `"pipeline"`). These structural pages outranked the actual prose in the Abstract, Section 3.3.1, and Table 4.19, wasting retrieval slots on table captions and dotted page leaders.
-     - **PDF Math Extraction Artifacts**: `pypdf` extracts the symbol $F_\beta$ as broken characters (`F _β_`), reducing similarity against the spelled-out query term `"F-beta score"`.
-     - **Multi-Part Query with Small $k$**: Answering both halves of the question requires retrieving chunks from different sections of a 72-page thesis within a strict $k=4$ budget.
+   - *What happened*: The model returned `"I can't answer based on the given documents."`
+   - *Root causes* (measured with the rank analysis in [Question 3 Diagnosis](#question-3-diagnosis)):
+     - **Retrieval failure, dataset-size half**: for the full question the best chunk containing the dataset size ranked **30th** of 489, far outside $k=4$.
+     - **Prompt failure, F-beta half**: a chunk with the F-beta answer (92.71%, recall 93.88%) ranked **2nd**, so it was already inside the top 4. The original prompt rule ("if the answer isn't explicit, I don't know") made the model refuse the whole question because only one half could be answered.
+     - **Front & back matter pollution** is real (a List of Tables chunk appears in the top 8) but was not the main cause here: the abstract chunk still ranked above it.
+     - **PDF math extraction** (`pypdf` writes $F_\beta$ as `F β`, which may weaken the match with "F-beta"): a hypothesis I have not tested.
 
 2. **Other Pipeline Limitations Found During Debugging**
    - **Uncleaned PDF Text**: Chunks still preserve hyphenated line breaks (`"nor-\nmally"`), stray single newlines, and glued multi-column text on acronym lists (`"ACMAssociation for Computing Machinery"`).
    - **No Hard Distance Cutoff in Retrieval**: `retrieve(question, k=4)` always returns 4 chunks even when cosine distances are poor (`> 0.44` on off-topic queries). While the generation prompt successfully caught all 3 negative tests, adding a distance threshold would save unnecessary LLM calls and prevent listing irrelevant `"Fontes recuperadas"` underneath `"I can't answer"` responses.
 
+### Question 3 Diagnosis
+
+To understand why the pipeline failed on Question #3, I tracked the global rank of the "gold" chunks (the chunks that really contain the answer) across the whole collection of 489 chunks. Gold chunks were found by exact text search (`where_document={"$contains": ...}`), not by embeddings, so they do not depend on the retrieval being tested:
+
+- **Dataset size**: chunks with `459` plus a marker that states the composition (e.g. `281 real`, `In total it contains`). 5 chunks: Section 3.3.1, the class-imbalance paragraph, the Limitations paragraph and two Conclusions chunks.
+- **Best pipeline**: chunks with both `92.71` and `93.88`. 5 chunks: the two abstracts (Portuguese, English), the Results prose and Table 4.19, and Table 4.32.
+- Excluded on purpose: a reference-list entry (`pp. 459–479`) and the Table 3.1 row `Total 459`, which have no context.
+
+I then ranked all 489 chunks for the full question (`Q_FULL`) and for each half on its own (`Q_A`: dataset size, `Q_B`: best pipeline on fold 0):
+
+| Query | Gold group | Gold ranks | Gold in top 4 / 10 / 20 |
+|---|---|---|---|
+| `Q_FULL` | dataset size | 30, 34, 67, 74, 137 | 0 / 0 / 0 |
+| `Q_FULL` | best pipeline | 2, 9, 13, 139, 152 | 1 / 2 / 3 |
+| `Q_A` | dataset size | 1, 9, 12, 13, 25 | 1 / 2 / 4 |
+| `Q_B` | best pipeline | 19, 20, 75, 117, 140 | 0 / 0 / 2 |
+
+The lists of ranks are sorted, so the table shows how many gold chunks sit where, not which chunk has which rank.
+
+The results show the following:
+
+1. **The two halves of Q3 failed for different reasons.**
+   - *Dataset-size half: retrieval failure.* The best gold chunk is at rank 30 for the full question, so even $k=20$ finds none of the five.
+   - *F-beta half: generation failure.* A gold chunk was at rank 2, inside the original top 4, yet the answer was a full refusal. The prompt rule that says "I don't know" when the answer is not explicit made the model discard the half it could answer.
+
+2. **Query blending is the likely cause of the dataset-size miss.**
+   - The best dataset-size chunk moves from rank **30** (full question) to rank **1** (`Q_A`), with the same chunks in the index.
+   - A single embedding for two topics sits between both targets. I did not test this mechanism directly; the evidence is the change in rank when the question is split.
+   - Splitting the question therefore looks necessary for multi-part questions, but it is an untested fix until the decomposition is evaluated (see below).
+
+3. **The isolated F-beta sub-question is worse than the full question.**
+   - `Q_B` alone puts its best gold chunk at rank **19**, against rank **2** for the full question. The cause is not established.
+   - Two hypotheses to test: many chunks discuss F-beta scores of the other approaches, so the topic is crowded; or the extra words in the full question (`dataset`, `dissertation`) pull the query towards the abstract.
+   - Consequence: decomposition with a small $k$ per sub-query can lose the F-beta half. The merged retrieval should probably also keep the results of the original full question.
+
+4. **The distance curve is flat.**
+   - From rank 1 to rank 20 the distance only moves by about `0.03` for the full question (`0.231` to `0.263`) and for `Q_B` (`0.244` to `0.276`), and by about `0.06` for `Q_A` (`0.226` to `0.283`).
+   - With such small gaps the rank order is sensitive to wording, and a distance threshold cannot separate good chunks from bad ones.
+
+5. **Front matter shows up but did not decide Q3.** In the later $k=8$ run a List of Tables chunk (PDF page 14) is retrieved in 6th position. This supports cleaning the corpus, but the abstract chunk still ranked above it.
+
+6. **Page numbers need care.** The `page` stored in Chroma is the PDF page. In the body of this dissertation the printed page is the PDF page minus 16 (PDF page 39 is printed page 23), but the front matter uses roman numerals and a different offset. The evaluation set must therefore use PDF pages or chunk ids, not the printed numbers.
+
+#### Fixes tried
+
+- **Partial-answer prompt**: a new rule lets the model answer what the context supports and state which part it cannot answer; "I don't know" stays for questions where nothing relevant appears. With this prompt and $k=8$, Q3 gets a partial answer: it gives the total number of images in the dataset and says it cannot answer the highest F-beta, without inventing a number.
+- **Larger $k$**: $k=8$ does not reach the dataset-size chunks (best rank 30), so it cannot fix the retrieval half.
+- **Query decomposition**: `decompose_query` and `retrieve_multi` are implemented in the notebook.
 ---
 
 ## Experiments Log
