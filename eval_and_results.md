@@ -111,7 +111,7 @@ This document contains 15 test questions designed to evaluate your RAG pipeline,
 **3. Question:** How many images are in the dissertation's dataset, and which pipeline achieved the highest overall F-beta score on the fold 0 test set?
 *   **Expected Answer:** The dataset contains 459 images in total (281 real clinical images and 178 simulated images), with 154 requiring a dressing change and 305 marked as safe. The best overall performance on the fold 0 test set was achieved by the segmentation pipeline using the 3-class **UPerNet** model followed by the rule-based classifier, reaching an F-beta score of 92.71% and a recall of 93.88% (missing only 3 of 49 positive cases).
 *   **Expected Source:** `Automated_Dressing_Saturation_Analysis.pdf` (Abstract, p. ii; Section 3.3.1, p. 23; Section 4.1.3 / Table 4.19, p. 50).
-*  **Outcome:** Did partially answer, only when k was increased to k=8, answering the total number of images, but still didn't answer the overall highest F-beta. ❌
+*  **Outcome:** Answered correctly to the question, with correct sources. ✅
 
 ### From `Revolucao_cravos.pdf`
 
