@@ -1,0 +1,147 @@
+[
+  {
+    "id": 1,
+    "question": "How is a chronic wound defined, and into which four categories are chronic wounds usually classified?",
+    "answerable": true,
+    "expected_answer": "A chronic wound is a wound that does not follow a normal healing process, typically taking more than 4 to 12 weeks without reaching full anatomic and functional recovery. They are usually classified into four categories: pressure, diabetic, venous, and arterial ulcers.",
+    "expected_source_note": "`Automated_Dressing_Saturation_Analysis.pdf` (Chapter 1, Section 1.1, p. 1 / PDF p. 17).",
+    "expected_groups": [
+      {"source": "Automated_Dressing_Saturation_Analysis.pdf", "pages": [5, 17, 19]}
+    ]
+  },
+  {
+    "id": 2,
+    "question": "What are the two clinical criteria used by the rule-based post-processing classifier to flag that a wound dressing needs changing?",
+    "answerable": true,
+    "expected_answer": "A dressing is flagged as needing a change if either of two criteria is met: (1) the **saturation ratio is >= 0.60** (the fraction of the dressing surface occupied by exudate exceeds 60%), or (2) **edge proximity is <= d pixels** (any exudate pixel lies within $d$ pixels of the dressing boundary, indicating a risk of leakage).",
+    "expected_source_note": "`Automated_Dressing_Saturation_Analysis.pdf` (Chapter 3, Section 3.4.4, pp. 29–30).",
+    "expected_groups": [
+      {"source": "Automated_Dressing_Saturation_Analysis.pdf", "pages": [45, 46]}
+    ]
+  },
+  {
+    "id": 3,
+    "question": "How many images are in the dissertation's dataset, and which pipeline achieved the highest overall F-beta score on the fold 0 test set?",
+    "answerable": true,
+    "expected_answer": "The dataset contains 459 images in total (281 real clinical images and 178 simulated images), with 154 requiring a dressing change and 305 marked as safe. The best overall performance on the fold 0 test set was achieved by the segmentation pipeline using the 3-class **UPerNet** model followed by the rule-based classifier, reaching an F-beta score of 92.71% and a recall of 93.88% (missing only 3 of 49 positive cases).",
+    "expected_source_note": "`Automated_Dressing_Saturation_Analysis.pdf` (Abstract, p. ii; Section 3.3.1, p. 23; Section 4.1.3 / Table 4.19, p. 50).",
+    "expected_groups": [
+      {"source": "Automated_Dressing_Saturation_Analysis.pdf", "pages": [39, 81, 82]},
+      {"source": "Automated_Dressing_Saturation_Analysis.pdf", "pages": [4, 5, 66, 79]}
+    ]
+  },
+  {
+    "id": 4,
+    "question": "What were the \"three d's\" promised by the Armed Forces Movement (MFA) during the 25 April 1974 Carnation Revolution, and which decree law initially sparked their professional grievances?",
+    "answerable": true,
+    "expected_answer": "The \"April Captains\" of the MFA promised the Portuguese people a political program known as the \"three d's\": **democracy, development, and decolonization**. The MFA formed principally in response to junior officers' demand to repeal **Decree Law 373–73**, which allowed conscripted officers (*milicianos*) to count all of their service toward seniority, moving ahead of professional junior officers.",
+    "expected_source_note": "`Revolucao_cravos.pdf` (Section *The Revolution of 25 April 1974*, p. 6).",
+    "expected_groups": [
+      {"source": "Revolucao_cravos.pdf", "pages": [7,8]}
+    ]
+  },
+  {
+    "id": 5,
+    "question": "What are the five milestones on the road to Portuguese democratization identified by Paul Christopher Manuel?",
+    "answerable": true,
+    "expected_answer": "The five milestones are: (1) getting the new constitutional dual-executive arrangement up and running, (2) establishing civilian control of the military by abolishing the Council of the Revolution in the 1982 constitutional amendment, (3) integrating into the European Economic Community (EEC) on 1 January 1986, (4) building electoral alliances across ideological differences (such as in the 1986 presidential election), and (5) achieving the peaceful alternation of power among competing political parties.",
+    "expected_source_note": "`Revolucao_cravos.pdf` (Section *Five Milestones on the Road to Portuguese Democratization*, pp. 10–14).",
+    "expected_groups": [
+      {"source": "Revolucao_cravos.pdf", "pages": [12,13,14]}
+    ]
+  },
+  {
+    "id": 6,
+    "question": "How is the Portuguese legislature (*Assembleia da República*) structured under the Constitution, and which method is used to allocate seats?",
+    "answerable": true,
+    "expected_answer": "Portugal has a unicameral legislature called the *Assembleia da República* with 230 seats, four-year terms, and 22 multi-seat constituencies (18 on the continent, one each for the Azores and Madeira, one for Portuguese in Europe, and one for Portuguese living elsewhere). Seats are allocated proportionally based on party votes using the **d'Hondt method**.",
+    "expected_source_note": "`Revolucao_cravos.pdf` (Section *Key Institutional Elements of Portuguese Democracy*, pp. 9–10).",
+    "expected_groups": [
+      {"source": "Revolucao_cravos.pdf", "pages": [10,11]}
+    ]
+  },
+  {
+    "id": 7,
+    "question": "Who founded Riot Games in 2006, and when was *League of Legends* officially released?",
+    "answerable": true,
+    "expected_answer": "Riot Games was started in 2006 by college roommates **Brandon \"Ryze\" Beck** and **Marc \"Tryndamere\" Merrill**. After several years of work and beta tests, *League of Legends* was released as a free download in **October 2009**.",
+    "expected_source_note": "`league-of-legends-beginners-guide_compress.pdf` (Chapter 1, pp. 7–8).",
+    "expected_groups": [
+      {"source": "league-of-legends-beginners-guide_compress.pdf", "pages": [9]}
+    ]
+  },
+  {
+    "id": 8,
+    "question": "In *League of Legends*, what two things happen when your team destroys an enemy inhibitor on Summoner's Rift?",
+    "answerable": true,
+    "expected_answer": "First, destroying an inhibitor allows your team's Nexus to begin spawning more powerful minions called **super minions**. Second, it causes two special turrets called **Nexus turrets** to pop up near the opposing team's Nexus, which must be defeated before your team can damage the enemy Nexus.",
+    "expected_source_note": "`league-of-legends-beginners-guide_compress.pdf` (Chapter 2, pp. 13–14).",
+    "expected_groups": [
+      {"source": "league-of-legends-beginners-guide_compress.pdf", "pages": [15,16]}
+    ]
+  },
+  {
+    "id": 9,
+    "question": "What is the difference between Riot Points and Blue Essence in *League of Legends*?",
+    "answerable": true,
+    "expected_answer": "Both are used to get in-game cosmetic items, but **Riot Points** cost real-life money to purchase in the in-game store, whereas **Blue Essence** is earned for free by playing matches and completing missions.",
+    "expected_source_note": "`league-of-legends-beginners-guide_compress.pdf` (Chapter 3, *Dressed for Success* sidebar, p. 22).",
+    "expected_groups": [
+      {"source": "league-of-legends-beginners-guide_compress.pdf", "pages": [24]}
+    ]
+  },
+  {
+    "id": 10,
+    "question": "In Python, what is the difference between the `/` and `//` division operators, and what is the order of operator precedence?",
+    "answerable": true,
+    "expected_answer": "The `/` operator divides and returns a floating-point number (`float`), while `//` divides and returns an integer (`int`). Operator precedence from highest to lowest is: (1) parentheses, (2) exponentiation (`**`), (3) multiplication / division, and (4) addition / subtraction.",
+    "expected_source_note": "`python.pdf` (Section *Arithmetic Operations*, p. 7).",
+    "expected_groups": [
+      {"source": "python.pdf", "pages": [7]}
+    ]
+  },
+  {
+    "id": 11,
+    "question": "How do tuples differ from lists in Python, and what value does a Python function return by default if it has no `return` statement?",
+    "answerable": true,
+    "expected_answer": "Tuples are like read-only lists; once defined, you cannot add, remove, or modify items in a tuple. If a function does not include a `return` statement, it returns `None` by default, which represents the absence of a value.",
+    "expected_source_note": "`python.pdf` (Sections *Tuples* and *Functions*, pp. 9–10).",
+    "expected_groups": [
+      {"source": "python.pdf", "pages": [9]}
+    ]
+  },
+  {
+    "id": 12,
+    "question": "What is the difference between a module and a package in Python?",
+    "answerable": true,
+    "expected_answer": "A module is a single file with Python code used to organize a program into smaller files, whereas a package is a directory containing a special `__init__.py` file that can hold one or more modules.",
+    "expected_source_note": "`python.pdf` (Sections *Modules* and *Packages*, pp. 12–13).",
+    "expected_groups": [
+      {"source": "python.pdf", "pages": [12,13]}
+    ]
+  },
+  {
+    "id": 13,
+    "question": "What buffs does a team receive for slaying Baron Nashor or an Elemental Drake in *League of Legends*?",
+    "answerable": false,
+    "expected_answer": "The RAG system must state that it **does not know** based on the provided context (e.g., *\"Não sei responder com base no contexto fornecido\"*), because `league-of-legends-beginners-guide_compress.pdf` only mentions generic neutral monsters in the jungle and never mentions Baron Nashor or Elemental Drakes.",
+    "expected_source_note": "",
+    "expected_groups": []
+  },
+  {
+    "id": 14,
+    "question": "How do you write a list comprehension or define an asynchronous function using `async` and `await` in Python?",
+    "answerable": false,
+    "expected_answer": "The RAG system must state that it **does not know** based on the provided context, because `python.pdf` only covers beginner constructs (`for` loops, basic functions, classes, and modules) and does not contain information on list comprehensions or `async`/`await`.",
+    "expected_source_note": "",
+    "expected_groups": []
+  },
+  {
+    "id": 15,
+    "question": "What ingredients and oven temperature are needed to bake a traditional chocolate cake?",
+    "answerable": false,
+    "expected_answer": "The RAG system must state that it **does not know** based on the provided context, as none of the indexed documents contain cooking recipes.",
+    "expected_source_note": "",
+    "expected_groups": []
+  }
+]

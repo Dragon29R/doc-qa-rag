@@ -1,0 +1,3 @@
+label,timestamp,retrieval_hit,cited_hit,negatives_refused,avg_chunks,errors
+decomp_k4_docs,2026-11-12T12:24:25,9/12,9/12,3/3,4.9,2
+decomp_k4_docs_clean,2026-11-12T12:28:14,10/12,10/12,3/3,5.2,1

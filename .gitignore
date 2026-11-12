@@ -3,6 +3,8 @@
 llm_workflows_and_agents_guide.html
 rag_from_scratch_guide.html
 chunks.json
+chunks_clean.json
 chroma_db/
 data/
 retrieval_logs.jsonl
+__pycache__/
