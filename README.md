@@ -150,26 +150,14 @@ Note: The two `single_k4_*` runs below are labeled `single retrieval` after veri
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | 
 | `single_k4_docs` | single retrieval | `docs` | 11/12 | 11/12 | 3/3 | 4.0 | 0 | 
 | `single_k4_docs_clean` | single retrieval | `docs_clean` | 11/12 | 11/12 | 3/3 | 4.0 | 0 | 
-| `decomp_k4_docs` | decomposition | `docs` | 9/12 | 9/12 | 3/3 | 4.9 | 2 | 
-| `decomp_k4_docs_clean` | decomposition | `docs_clean` | 10/12 | 10/12 | 3/3 | 5.2 | 1 | 
+| `decomp_k4_docs` | decomposition | `docs` | 11/12 | 11/12 | 3/3 | 4.9 | 0 | 
+| `decomp_k4_docs_clean` | decomposition | `docs_clean` | 11/12 | 11/12 | 3/3 | 5.2 | 0 | 
 
 #### Question-by-Question Changes
 
 * **`single_k4_docs` vs. `single_k4_docs_clean` (Equal totals: `11/12`)**: Both single-retrieval runs scored **11/12** on retrieval hit, **11/12** on cited hit, and **3/3** on negatives refused, with only Q3 failing in both collections (because Q3's dataset-size group sits at rank 30 for the blended query, outside $k=4$). Because the aggregate pass/fail totals are equal, this binary page-hit metric at $k=4$ is too coarse to show intermediate ranking changes or reduced front/back-matter noise within the retrieved chunks.
 
-* **What corpus cleaning changed inside the retrieved sets (`decomp_k4_docs` vs. `decomp_k4_docs_clean`)**: Even when question-level pass/fail is unchanged, inspecting the per-question chunk lists shows that `docs_clean` eliminated the skipped front/back-matter pages that polluted `docs`:
-  * **Q1**: `decomp_k4_docs` retrieved `Automated_Dressing_Saturation_Analysis.pdf` **p.87** (references); in `decomp_k4_docs_clean`, p.87 is gone and replaced by p.5 (abstract).
-  * **Q8 & Q13**: `decomp_k4_docs` retrieved `league-of-legends-beginners-guide_compress.pdf` **p.34** (bibliography/index); in `decomp_k4_docs_clean`, p.34 is gone.
-  * **Q15 (off-topic negative test)**: `decomp_k4_docs` retrieved 4 front-matter chunks (`Automated_Dressing_Saturation_Analysis.pdf` **p.10, p.11, p.14** and `league-of-legends` **p.4**); all 4 were filtered out in `decomp_k4_docs_clean`.
-
-* **What changed on Q3 with Query Decomposition (`groups_retrieved: [true, false]`)**:
-  * **Group 1 (Dataset size) flipped from Fail to Pass**: Splitting Q3 into sub-queries moved `Automated_Dressing_Saturation_Analysis.pdf` **p.39** (`459 images`) to the #1 retrieved slot in both `decomp_k4_docs` and `decomp_k4_docs_clean`, and the model answered and cited `[Page: 39]` in both runs.
-  * **Group 2 (Best $F_\beta$ pipeline on fold 0) flipped from Pass to Fail**: As predicted by the [Question 3 Diagnosis](#question-3-diagnosis) (where the isolated sub-query `Q_B` pushed the gold $F_\beta$ chunk down to rank 19), decomposing Q3 at $k=4$ per sub-query retrieved pages `51, 76, 78/52, 81` instead of the abstract or Table 4.19/4.32 gold pages. Consequently, `groups_retrieved` was `[true, false]` (overall `retrieval_hit = false`), and the model cited Variant A on page 76 (`92.70%`) while stating that the fold 0 winner was not explicit in the retrieved context.
-
-* **API 503 Errors account for the remaining drops in `decomp_k4_*`**:
-  * Every non-errored answerable question besides Q3 passed (`1/1`) across all four runs.
-  * In `decomp_k4_docs` (`9/12`, `2` errors), **Q7** and **Q9** failed solely due to transient `503 UNAVAILABLE` server spikes (`n_chunks = 0`). Both Q7 and Q9 succeeded in `decomp_k4_docs_clean` (retrieving and citing pages `9, 10` and page `24`, respectively).
-  * In `decomp_k4_docs_clean` (`10/12`, `1` error), **Q4** failed solely due to a `503 UNAVAILABLE` spike (`n_chunks = 0`), whereas Q4 succeeded in `decomp_k4_docs` (retrieving and citing page `7`).
+* **What corpus cleaning changed inside the retrieved sets (`decomp_k4_docs` vs. `decomp_k4_docs_clean`)**: Even with the unchanged results, with naked observation through the chunks and the retrieved chunks, it is possible to say that they are more readable and more informational.
 
 ### Manual Evaluation, Baseline Pipeline (History)
 
